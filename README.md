@@ -25,4 +25,4 @@ from the DevTools, e.g. type: "board[sq] = BLACK; drawBoard();",
 this would put a stone to "sq", note board is 1d array.
 
 # Play vs BMGP
-<a href="https://maksimkorzh.github.io/bmgp/bmgp.html">Play now</a>
+<a href="https://footofgod.github.io/stonesdemo/stones.html">Play now</a>
