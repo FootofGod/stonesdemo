@@ -24,5 +24,5 @@ Before starting the game you can set additional stones
 from the DevTools, e.g. type: "board[sq] = BLACK; drawBoard();",
 this would put a stone to "sq", note board is 1d array.
 
-# Play vs BMGP
+# Play Stones vs BMGP Engine
 <a href="https://footofgod.github.io/stonesdemo/stones.html">Play now</a>
