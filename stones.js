@@ -137,6 +137,7 @@ function updateScore() { /* Render score to screen */
    if (lead >= leadThreshold - compensation || lead <= -leadThreshold - compensation){ //we need to make this ifs with requirement of 2 stones captured
 	 alert(leader + " Wins!"); 
 	canvas.removeEventListener("click", userInput);
+	side = EMPTY;
    }
 }
 
@@ -324,7 +325,6 @@ function play(depth) { /* Engine plays a move */
     if (empty == -1) { //rendered useless to override original game ending mechanic
       let finalScore = score();
       finalScore = finalScore[BLACK] - finalScore[WHITE];
-      alert(((finalScore > 0) ? "Black": "White") + " wins by " + Math.abs(finalScore) + " points");
       canvas.removeEventListener("click", userInput);
     } setStone(bestMove, side, false); 
     return;
