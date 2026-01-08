@@ -1,9 +1,13 @@
 /*****************************************\
   =======================================
  
-         Bare Minimum Go Program
+               Stones Demo
 
                     by
+
+				FootofGod
+
+			   forked from
 
              Code Monkey King
 
@@ -21,7 +25,7 @@ const OFFBOARD = 7
 const LIBERTY = 8
 
 var board = [];
-var size = 15;
+var size = 11;
 var side = BLACK;
 var liberties = [];
 var block = [];
@@ -29,6 +33,8 @@ var points_side = [];
 var compensation = 6
 var lead = []; // this shows who has the lead, White is positive, Black is negative
 var leadThreshold = 7; // lead threshold (defaults by board size, make custom)
+var pts = []; //used to track last capture
+var lastCapture = [];
 var leader = [];
 var points_count = [];
 var ko = EMPTY;
@@ -85,6 +91,7 @@ function userInput(event) { /* Handle user input */
   if (!setStone(sq, side, true)) return;
   drawBoard();
   setTimeout(function() { play(6); }, 10);
+  updateScore();
 }
 //--- we don't need this, we need to make a new score system 
 function territory(sq) { /*Count territory, returns [side, points] */
@@ -117,7 +124,7 @@ function score() { /* Scores game, returns points [empty, black, white]*/
   if (prisoners < 0) scorePosition[WHITE] += Math.abs(prisoners);
   scorePosition[WHITE] += compensation;  // Compensation stones
   lead = prisoners - compensation;
-  //return scorePosition;
+  return scorePosition; //we still need this for the move selection to work properly
   return lead;
 
 }
@@ -126,9 +133,9 @@ function updateScore() { /* Render score to screen */
   let pts = score();
   let leader = lead<0 ? "White": lead==0 ? "" : "Black";
   let element = document.getElementById("score");
-  element.innerHTML = "Lead: " + Math.abs(lead) + " " + leader + " | White Compensation: " + compensation ; //need to replace with "Lead" = diff
-   if (lead >= leadThreshold - compensation || lead <= -leadThreshold - compensation){
-	 alert(leader + " Wins!") 
+  element.innerHTML = "Lead: " + Math.abs(lead) + " " + leader + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture; //need to replace with "Lead" = diff
+   if (lead >= leadThreshold - compensation || lead <= -leadThreshold - compensation){ //we need to make this ifs with requirement of 2 stones captured
+	 alert(leader + " Wins!"); 
 	canvas.removeEventListener("click", userInput);
    }
 }
@@ -176,8 +183,8 @@ function captures(color, move) { /* Handle captured stones */
     if (stone == OFFBOARD) continue;
     if (stone & color) {
       count(sq, color);
-      if (liberties.length == 0) clearBlock(move);
-      restoreBoard()
+      if (liberties.length == 0) clearBlock(move);	  //maybe can add an ifelse here to check again for suicide
+      restoreBoard();
     }
   }
 }
@@ -246,7 +253,9 @@ function evaluate() { /* Count captures stones difference */
     if (board[sq] == BLACK) blackStones += 1;
     if (board[sq] == WHITE) whiteStones += 1;
   } eval += (blackStones - whiteStones);
+  lastCapture = blackStones + whiteStones;
   return (side == BLACK) ? eval : -eval;
+  
 }
 
 function search(depth) { /* Recursively search fighting moves */
@@ -312,10 +321,12 @@ function play(depth) { /* Engine plays a move */
     side = 3 - side;
     updateScore();
     let empty = score()[EMPTY];
-   /* if (lead < 0) {
-      alert(((lead < 0) ? "Black": "White") + " wins!"); // temporary game end fix - does NOT use 2 capture minimum rule - broken needs work
+    if (empty == -1) { //rendered useless to override original game ending mechanic
+      let finalScore = score();
+      finalScore = finalScore[BLACK] - finalScore[WHITE];
+      alert(((finalScore > 0) ? "Black": "White") + " wins by " + Math.abs(finalScore) + " points");
       canvas.removeEventListener("click", userInput);
-    } else alert("Pass");    -----  do we need this at all?*/
+    } setStone(bestMove, side, false); 
     return;
   };drawBoard();
   updateScore();
