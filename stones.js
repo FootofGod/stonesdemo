@@ -14,7 +14,7 @@
   =======================================
 \*****************************************/
 
-// DATA
+// DATA 
 const canvas = document.getElementById('gobang');
 const ctx = canvas.getContext('2d');
 const EMPTY = 0
@@ -32,9 +32,9 @@ var block = [];
 var points_side = [];
 var compensation = 6
 var lead = []; // this shows who has the lead, White is positive, Black is negative
+var leadOld =[]; // we'll frickin try this!
 var leadThreshold = 7; // lead threshold (defaults by board size, make custom)
 var pts = []; //used to track last capture
-var lastCapture = [];
 var leader = [];
 var points_count = [];
 var ko = EMPTY;
@@ -111,6 +111,7 @@ function territory(sq) { /*Count territory, returns [side, points] */
 }
 
 function score() { /* Scores game, returns points [empty, black, white]*/
+	leadOld = lead
   let scorePosition = [0, 0, 0];
   for (let sq = 0; sq < size ** 2; sq++) {
     if (board[sq]) continue;
@@ -124,6 +125,7 @@ function score() { /* Scores game, returns points [empty, black, white]*/
   if (prisoners < 0) scorePosition[WHITE] += Math.abs(prisoners);
   scorePosition[WHITE] += compensation;  // Compensation stones
   lead = prisoners - compensation;
+  lastCapture = Math.abs(lead - leadOld + (side == BLACK ? 1 : -1));
   return scorePosition; //we still need this for the move selection to work properly
   return lead;
 
@@ -134,7 +136,7 @@ function updateScore() { /* Render score to screen */
   let leader = lead<0 ? "White": lead==0 ? "" : "Black";
   let element = document.getElementById("score");
   element.innerHTML = "Lead: " + Math.abs(lead) + " " + leader + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture; //need to replace with "Lead" = diff
-   if (lead >= leadThreshold - compensation || lead <= -leadThreshold - compensation){ //we need to make this ifs with requirement of 2 stones captured
+   if (lead >= leadThreshold - compensation && lastCapture >=2 || lead <= -leadThreshold - compensation && lastCapture >=2){ //we need to make this ifs with requirement of 2 stones captured
 	 alert(leader + " Wins!"); 
 	canvas.removeEventListener("click", userInput);
 	side = EMPTY;
@@ -249,13 +251,12 @@ function evaluate() { /* Count captures stones difference */
   let eval = 0;
   let blackStones = 0;
   let whiteStones = 0;
-  for (let sq = 0; sq < size ** 2; sq++) {
+    for (let sq = 0; sq < size ** 2; sq++) {
     if (!board[sq] || board[sq] == OFFBOARD) continue;
     if (board[sq] == BLACK) blackStones += 1;
     if (board[sq] == WHITE) whiteStones += 1;
   } eval += (blackStones - whiteStones);
-  lastCapture = blackStones + whiteStones;
-  return (side == BLACK) ? eval : -eval;
+    return (side == BLACK) ? eval : -eval;
   
 }
 
