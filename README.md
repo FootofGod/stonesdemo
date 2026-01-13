@@ -1,5 +1,6 @@
 # Stones Prototype (BMGP)
 A prototype for the Stones variant of Go built off of Bare Minimum Go Program
+Plans to add simple Netplay vis NetplayJS from https://github.com/rameshvarun/netplayjs
 
 # Motivation
 I want to make a version of Go with an unambiguous end, while being as close as possible to determining the same winner.
