@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stones Demo</title>
+</head>
+<body>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+  </style>
+  <select id="size" style="margin-left: 30px; margin-bottom: 10px; z-index: 1">
+    <option value="11" selected>9x9</option>
+    <option value="15">13x13</option>
+    <option value="21">19x19</option>
+  </select>
+  <p style="margin-bottom: 20px;"></p>
+  <canvas
+    id="gobang"
+    width="500"
+    height="500"
+    style="
+	background-image: url('https://i.imgur.com/VJhgbnA.png'); 
+            background-repeat: no-repeat; 
+            background-size: cover; 
+            background-position: center; 
+      padding: 0;
+      margin: auto;
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;">
+  </canvas>
+     <p style="margin-top: 50px;"></p>
+  <div id="score" style="text-align: center; margin-top: 450px;">Black to play</div>
+  <script src="stonesVS.js"></script>
+  <a href="https://iowago.club/stones" target="blank">Learn How to Play Stones</a>
+</body>
+</html>
