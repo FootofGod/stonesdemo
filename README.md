@@ -26,5 +26,5 @@ from the DevTools, e.g. type: "board[sq] = BLACK; drawBoard();",
 this would put a stone to "sq", note board is 1d array.
 
 # Play Stones vs BMGP Engine
-<a href="https://footofgod.github.io/stonesdemo/stones.html">Play the basic bot</a>
+<p><a href="https://footofgod.github.io/stonesdemo/stones.html">Play the basic bot</a></p>
 <a href="https://footofgod.github.io/stonesdemo/stonesVS.html">Play against someone live (demo board)</a>
