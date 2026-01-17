@@ -16,6 +16,7 @@
 
 // DATA 
 const canvas = document.getElementById('gobang');
+const prisonerReturn = document.getElementById("ReturnButton");
 const ctx = canvas.getContext('2d');
 const EMPTY = 0
 const BLACK = 1
@@ -33,7 +34,7 @@ var block = [];
 var points_side = [];
 var compensation = 6
 var lead = []; // this shows who has the lead, White is positive, Black is negative
-var leadOld =[]; // we'll frickin try this!
+var leadOld =[];
 var leadThreshold = 7; // lead threshold (defaults by board size, make custom)
 var pts = []; //used to track last capture
 var leader = [];
@@ -91,7 +92,7 @@ function userInput(event) { /* Handle user input */
   if (board[sq]) return;
   if (!setStone(sq, side, true)) return;
   drawBoard();
-  setTimeout(function() { play(6); }, 10);
+  // setTimeout(function() { play(6); }, 10);
   updateScore();
 }
 //--- we need to keep this as it interacts with the bot
@@ -111,8 +112,6 @@ function territory(sq) { //Count territory, returns [side, points]
   else return [EMPTY, points_count.length];
 }
 
-// function prisonerReturn() { // no clue what to do here but we need the button to only be clickable by the turn playe
-
 function score() { // Scores game, returns points [empty, black, white]
 	leadOld = lead
   let scorePosition = [0, 0, 0];
@@ -129,15 +128,14 @@ function score() { // Scores game, returns points [empty, black, white]
   scorePosition[WHITE] += compensation;  // Compensation stones
   lead = prisoners + (side == BLACK ? 1 : 0) -1;
   lastCapture = Math.abs(lead - leadOld);
-  return scorePosition; //we still need this for the move selection to work properly
-  return lead;
+  return [scorePosition, lead]; //we still need this for the move selection to work properly
 
 }
 
 function updateScore() { // Render score to screen 
   let pts = score();
   boardPositions.push(JSON.stringify(board));
-  let leader = lead<0 ? "White": lead==0 ? "" : "Black";
+  leader = lead<0 ? "White": lead==0 ? "" : "Black";
   let element = document.getElementById("score");
   element.innerHTML = (side==1 ? "Black":"White")  + " to Play<br>" + leader +" "+ (leadThreshold-Math.abs(lead)) + " more to Win (w/ 2+ Capture)<br>" + "Lead Threshold: " + leadThreshold + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture + "<br>"// + boardPositions; //need to replace with "Lead" = diff
    if (lead >= leadThreshold && lastCapture >=2 || lead <= -leadThreshold && lastCapture >=2){ 
@@ -268,7 +266,7 @@ function evaluate() { /* Count captures stones difference */
   
 }
 
-function search(depth) { /* Recursively search fighting moves */
+function search(depth) { /* Recursively search fighting moves  - we still need this, it interacts with stuff*/
   if (!depth) return evaluate();
   let bestScore = -10000;
   for (let sq of getUrgentMoves()) {
@@ -342,11 +340,22 @@ function tenuki(direction) { /* Play away when no urgent moves */
   let scorePosition = score();
 } */
 
+//STONES SPECIFIC RULES
+function returnPrisoner() {
+	if ( (side == 1 && (lead-compensation)<0) || (side == 2 && (lead-compensation)>0 || (lead - compensation) == 0 )) { //this just doesn't work - may have been 'let' on leader?
+	alert("Must have more Prisoner to use Prisoner Return \nPlay another move")} else {
+		alert("Prisoner Returned");
+		
+		side = 3 - side;	
+}
+}
+
+
 // MAIN
 canvas.addEventListener('click', userInput);
 selectSize.addEventListener("change", function() {
   size = parseInt(selectSize.value);
-  size == 21 ? leadThreshold = 15 : size == 15 ? leadThreshold = 11 : leadThreshold = 7 ; // fix?
+  size == 21 ? leadThreshold = 15 : size == 15 ? leadThreshold = 11 : leadThreshold = 7 ; 
   cell = canvas.width / size;
   initBoard();
   drawBoard();
