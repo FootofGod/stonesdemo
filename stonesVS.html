@@ -8,6 +8,7 @@
 <body>
   <style>
     body {
+	  background-color: #1d361a;
       margin: 0;
       height: 100vh;
       display: flex;
@@ -16,15 +17,16 @@
       flex-direction: column;
     }
   </style>
-  <select id="size" style="margin-left: 30px; margin-bottom: 20px; z-index: 1">
+  <select id="size" style="margin-top: 50px; margin-bottom: 20px; z-index: 1">
     <option value="11" selected>9x9</option>
     <option value="15">13x13</option>
     <option value="21">19x19</option>
   </select>
+  
   <canvas
     id="gobang"
-    width="500"
-    height="500"
+    width="450"
+    height="450"
     style="
 	background-image: url('https://i.imgur.com/VJhgbnA.png'); 
             background-repeat: no-repeat; 
@@ -39,7 +41,7 @@
       left: 0;
       right: 0;">
   </canvas>
-     <p style="margin-top: 100px;"></p>
+     <p style="margin-top: 50px;"></p>
   <div id="score" style="text-align: center; margin-top: 450px;">Black to play</div>
  <button onclick="returnPrisoner()">Prisoner Return</button> 
  <script src="stonesVS.js"></script>
