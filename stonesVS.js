@@ -43,6 +43,7 @@ var ko = EMPTY;
 var bestMove = EMPTY;
 var userMove = 0;
 var cell = canvas.width / size;
+var noMove = []; // counts moves that don't place a stone on the board (Prisoner Returns and Stakes) to create a new Board Position
 var selectSize = document.getElementById("size");
 
 // GUI
@@ -134,10 +135,9 @@ function score() { // Scores game, returns points [empty, black, white]
 
 function updateScore() { // Render score to screen 
   let pts = score();
-  boardPositions.push(JSON.stringify(board));
   leader = lead<0 ? "White": lead==0 ? "" : "Black";
   let element = document.getElementById("score");
-  element.innerHTML = (side==1 ? "Black":"White")  + " to Play<br>" + leader +" "+ (leadThreshold-Math.abs(lead)) + " more to Win (w/ 2+ Capture)<br>" + "Lead Threshold: " + leadThreshold + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture + "<br>"// + boardPositions; //need to replace with "Lead" = diff
+  element.innerHTML = (side==1 ? "Black":"White")  + " to Play<br>" + leader +" "+ (leadThreshold-Math.abs(lead)) + " more to Win (w/ 2+ Capture)<br>" + "Lead Threshold: " + leadThreshold + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture + "<br>"
    if (lead >= leadThreshold && lastCapture >=2 || lead <= -leadThreshold && lastCapture >=2){ 
 	 alert(leader + " Wins!"); 
 	canvas.removeEventListener("click", userInput);
@@ -215,7 +215,6 @@ function restoreBoard() { /* Remove group markers */
 }
 
 function setStone(sq, color, user) { /* Place stone on board */
- // if (boardPositions.includes(JSON.stringify(board))) alert ("Illegal - superko!"); //works in theory but alerts every move
   if (board[sq] != EMPTY) {
     if (user) alert("Illegal move!");
     return false;
@@ -224,21 +223,17 @@ function setStone(sq, color, user) { /* Place stone on board */
     return false;
   } let old_ko = ko;   //we need to redo ko
   ko = EMPTY;
+  
   board[sq] = color;
   captures(3 - color, sq);
   count(sq, color);
-  count(sq,!color);
-  captures(3 - !color, sq);
+  captures(color, sq); //these two try to remove suicides
   count(sq, !color);
   let suicide = true ? false : true; //we need to redo suicide
   restoreBoard();
-  if (suicide) {
-    board[sq] = EMPTY;
-    ko = old_ko;
-    if (user) alert("Suicide move!");
-    return false;
-  } side = 3 - side;
+  side = 3 - side;
   userMove = sq;
+  // if (boardPositions.includes(JSON.stringify(board))) alert ("Illegal - superko!"); //works in theory but alerts every move boardPositions.push(JSON.stringify(board));
   return true; /*----- We don't need no stinking suicide rule (though we might have to check for superko?) */ 
 }
 
@@ -365,3 +360,9 @@ selectSize.addEventListener("change", function() {
 
 initBoard();
 drawBoard();
+/*
+
+
+
+
+*/
