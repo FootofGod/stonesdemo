@@ -17,12 +17,15 @@
       flex-direction: column;
     }
   </style>
-  <select id="size" style="margin-top: 50px; margin-bottom: 20px; z-index: 1">
-    <option value="11" selected>9x9</option>
+  <select id="size" style="margin-top: 50px; margin-bottom: 0px; z-index: 1">
+     <option value="9">7x7</option>
+	<option value="11" selected>9x9</option>
     <option value="15">13x13</option>
-    <option value="21">19x19</option>
   </select>
-  
+  <select id="comp" style="margin-top: 0px; margin-bottom: 0px; z-index: 1">
+     <option value="0">Compensation OFF</option>
+	<option value="6" selected>Compensation ON</option>
+  </select>
   <canvas
     id="gobang"
     width="450"
@@ -41,11 +44,26 @@
       left: 0;
       right: 0;">
   </canvas>
-     <p style="margin-top: 50px;"></p>
+    <canvas
+    id="pzone"
+    width="200"
+    height="450"
+    style="
+	  border: 1px solid white;; 
+      padding: 1;
+      margin: auto;
+      display: block;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 700px;
+      right: 0;">
+  </canvas>
+     <p style="margin-top: 20px;"></p>
   <div id="score" style="text-align: center; margin-top: 450px;">Black to play</div>
  <button onclick="returnPrisoner()">Prisoner Return</button> 
  <script src="stonesVS.js"></script>
-
   <a href="https://iowago.club/stones" target="blank">Learn How to Play Stones</a>
+  <p style="margin-bottom: 50px;"></p>
 </body>
 </html>

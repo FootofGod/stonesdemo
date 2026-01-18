@@ -16,7 +16,10 @@
 
 // DATA 
 const canvas = document.getElementById('gobang');
+const canvas2 = document.getElementById('pzone');
+const ctx2 = canvas2.getContext('2d');
 const prisonerReturn = document.getElementById("ReturnButton");
+const prisonerZone = document.getElementById('pzone');
 const ctx = canvas.getContext('2d');
 const EMPTY = 0
 const BLACK = 1
@@ -32,7 +35,6 @@ var side = BLACK;
 var liberties = [];
 var block = [];
 var points_side = [];
-var compensation = 6
 var lead = []; // this shows who has the lead, White is positive, Black is negative
 var leadOld =[];
 var leadThreshold = 7; // lead threshold (defaults by board size, make custom)
@@ -45,6 +47,7 @@ var userMove = 0;
 var cell = canvas.width / size;
 var noMove = []; // counts moves that don't place a stone on the board (Prisoner Returns and Stakes) to create a new Board Position
 var selectSize = document.getElementById("size");
+var compensation = document.getElementById('comp').value;
 
 // GUI
 function drawBoard() { /* Render board to screen */
@@ -71,7 +74,7 @@ function drawBoard() { /* Render board to screen */
         ctx.fill();
         ctx.stroke();
       }
-      if (sq == userMove) {
+      if (sq == userMove) { // this part is the move marker
         let color = board[sq] == 1 ? "white" : "black";
         ctx.beginPath();
         ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 4 - 2, 0, 2 * Math.PI);
@@ -83,6 +86,25 @@ function drawBoard() { /* Render board to screen */
   }
 }
 
+function drawPrisoners() { // Render prisoners to screen
+  ctx2.clearRect(0, 0, canvas2.width, canvas2.height);  //we need to make it put two columns of 6, one being compensation, one being lead
+  for (let i = 0; i < compensation; i++) {
+        ctx2.beginPath();
+        ctx2.arc(40, 100+i*40, cell / 2 - 2, 0, 2 * Math.PI);
+        ctx2.fillStyle = "black";
+        ctx2.fill();
+        ctx2.stroke();
+      }
+	for (let i = 0; i < Math.abs(lead); i++) {
+        ctx2.beginPath();
+        ctx2.arc(100, 100+i*40, cell / 2 - 2, 0, 2 * Math.PI);
+        ctx2.fillStyle = (lead < 0 ? "black" : "white");
+        ctx2.fill();
+        ctx2.stroke();
+      }
+}
+
+
 function userInput(event) { /* Handle user input */
   let rect = canvas.getBoundingClientRect();
   let mouseX = event.clientX - rect.left;
@@ -92,9 +114,12 @@ function userInput(event) { /* Handle user input */
   let sq = row * size + col;
   if (board[sq]) return;
   if (!setStone(sq, side, true)) return;
-  drawBoard();
+  drawBoard(); 
+  
   // setTimeout(function() { play(6); }, 10);
   updateScore();
+  drawPrisoners();
+
 }
 //--- we need to keep this as it interacts with the bot
 function territory(sq) { //Count territory, returns [side, points]
@@ -354,12 +379,22 @@ selectSize.addEventListener("change", function() {
   cell = canvas.width / size;
   initBoard();
   drawBoard();
+  drawPrisoners();
   side = BLACK;
   ko = EMPTY;
 });
-
+comp.addEventListener("change", function() {
+  compensation = parseInt(comp.value);
+  cell = canvas.width / size;
+  initBoard();
+  drawBoard();
+  drawPrisoners();
+  side = BLACK;
+  ko = EMPTY;
+});
 initBoard();
 drawBoard();
+drawPrisoners();
 /*
 
 
