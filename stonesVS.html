@@ -17,15 +17,31 @@
       flex-direction: column;
     }
   </style>
-  <select id="size" style="margin-top: 50px; margin-bottom: 0px; z-index: 1">
+<div> 
+ <select id="size" style=" margin-top: 50px; margin-bottom: 10px; z-index: 1">
      <option value="9">7x7</option>
 	<option value="11" selected>9x9</option>
     <option value="15">13x13</option>
   </select>
-  <select id="comp" style="margin-top: 0px; margin-bottom: 0px; z-index: 1">
+  <select id="comp" style=" margin-top: 0px; margin-bottom: 10px; z-index: 1">
      <option value="0">Compensation OFF</option>
 	<option value="6" selected>Compensation ON</option>
   </select>
+  </div>
+  <div>
+  <canvas
+    id="left"
+    width="200"
+    height="450"
+    style="
+	  border: 1px none;
+      padding: 1;
+      margin: auto;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;">
+  </canvas>
   <canvas
     id="gobang"
     width="450"
@@ -37,8 +53,6 @@
             background-position: center; 
       padding: 0;
       margin: auto;
-      display: block;
-      position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
@@ -49,21 +63,22 @@
     width="200"
     height="450"
     style="
-	  border: 1px solid white;; 
+	  border: 1px solid white;
       padding: 1;
       margin: auto;
-      display: block;
-      position: absolute;
       top: 0;
       bottom: 0;
-      left: 700px;
+      left: 0;
       right: 0;">
   </canvas>
-     <p style="margin-top: 20px;"></p>
-  <div id="score" style="text-align: center; margin-top: 450px;">Black to play</div>
+  </div>
+  <div id="score" style="text-align: center; margin-top: 10px;">Black to play</div>
  <button onclick="returnPrisoner()">Prisoner Return</button> 
  <script src="stonesVS.js"></script>
-  <a href="https://iowago.club/stones" target="blank">Learn How to Play Stones</a>
-  <p style="margin-bottom: 50px;"></p>
+ <div>
+	<a href="https://iowago.club/stones" target="blank"><button>Learn How to Play Stones</button> </a>
+	<a href="https://forms.gle/1q9eMPyE5LxCtYhP6" target="blank"><button>Take our quick survey!</button> </a>
+  <p style="margin-bottom: 10px;"></p>
+  </div>
 </body>
 </html>
