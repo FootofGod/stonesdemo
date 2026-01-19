@@ -16,6 +16,10 @@
 
 // DATA 
 const canvas = document.getElementById('gobang');
+const canvas2 = document.getElementById('pzone');
+const ctx2 = canvas2.getContext('2d');
+const prisonerReturn = document.getElementById("ReturnButton");
+const prisonerZone = document.getElementById('pzone');
 const ctx = canvas.getContext('2d');
 const EMPTY = 0
 const BLACK = 1
@@ -25,14 +29,14 @@ const OFFBOARD = 7
 const LIBERTY = 8
 
 var board = [];
+var boardPositions = [];
 var size = 11;
 var side = BLACK;
 var liberties = [];
 var block = [];
 var points_side = [];
-var compensation = 6
 var lead = []; // this shows who has the lead, White is positive, Black is negative
-var leadOld =[]; // we'll frickin try this!
+var leadOld =[];
 var leadThreshold = 7; // lead threshold (defaults by board size, make custom)
 var pts = []; //used to track last capture
 var leader = [];
@@ -41,7 +45,9 @@ var ko = EMPTY;
 var bestMove = EMPTY;
 var userMove = 0;
 var cell = canvas.width / size;
+var noMove = []; // counts moves that don't place a stone on the board (Prisoner Returns and Stakes) to create a new Board Position
 var selectSize = document.getElementById("size");
+var compensation = document.getElementById('comp').value;
 
 // GUI
 function drawBoard() { /* Render board to screen */
@@ -68,7 +74,7 @@ function drawBoard() { /* Render board to screen */
         ctx.fill();
         ctx.stroke();
       }
-      if (sq == userMove) {
+      if (sq == userMove) { // this part is the move marker
         let color = board[sq] == 1 ? "white" : "black";
         ctx.beginPath();
         ctx.arc(col * cell+(cell/4)*2, row * cell +(cell/4)*2, cell / 4 - 2, 0, 2 * Math.PI);
@@ -80,6 +86,25 @@ function drawBoard() { /* Render board to screen */
   }
 }
 
+function drawPrisoners() { // Render prisoners to screen
+  ctx2.clearRect(0, 0, canvas2.width, canvas2.height);  //we need to make it put two columns of 6, one being compensation, one being lead
+  for (let i = 0; i < compensation; i++) {
+        ctx2.beginPath();
+        ctx2.arc(40, 100+i*40, cell / 2 - 2, 0, 2 * Math.PI);
+        ctx2.fillStyle = "black";
+        ctx2.fill();
+        ctx2.stroke();
+      }
+	for (let i = 0; i < Math.abs(lead); i++) {
+        ctx2.beginPath();
+        ctx2.arc(100, 100+i*40, cell / 2 - 2, 0, 2 * Math.PI);
+        ctx2.fillStyle = (lead < 0 ? "black" : "white");
+        ctx2.fill();
+        ctx2.stroke();
+      }
+}
+
+
 function userInput(event) { /* Handle user input */
   let rect = canvas.getBoundingClientRect();
   let mouseX = event.clientX - rect.left;
@@ -89,12 +114,15 @@ function userInput(event) { /* Handle user input */
   let sq = row * size + col;
   if (board[sq]) return;
   if (!setStone(sq, side, true)) return;
-  drawBoard();
+  drawBoard(); 
+  
   setTimeout(function() { play(6); }, 10);
   updateScore();
+  drawPrisoners();
+
 }
-//--- we don't need this, we need to make a new score system 
-function territory(sq) { /*Count territory, returns [side, points] */
+//--- we need to keep this as it interacts with the bot
+function territory(sq) { //Count territory, returns [side, points]
   stone = board[sq];
   if (stone == OFFBOARD) return OFFBOARD;
   if (stone == EMPTY) {
@@ -110,7 +138,7 @@ function territory(sq) { /*Count territory, returns [side, points] */
   else return [EMPTY, points_count.length];
 }
 
-function score() { /* Scores game, returns points [empty, black, white]*/
+function score() { // Scores game, returns points [empty, black, white]
 	leadOld = lead
   let scorePosition = [0, 0, 0];
   for (let sq = 0; sq < size ** 2; sq++) {
@@ -124,19 +152,18 @@ function score() { /* Scores game, returns points [empty, black, white]*/
   if (prisoners > 0) scorePosition[BLACK] += prisoners;
   if (prisoners < 0) scorePosition[WHITE] += Math.abs(prisoners);
   scorePosition[WHITE] += compensation;  // Compensation stones
-  lead = prisoners - compensation;
-  lastCapture = Math.abs(lead - leadOld + (side == BLACK ? 1 : -1));
-  return scorePosition; //we still need this for the move selection to work properly
-  return lead;
+  lead = prisoners + (side == BLACK ? 1 : 0) -1;
+  lastCapture = Math.abs(lead - leadOld);
+  return [scorePosition, lead]; //we still need this for the move selection to work properly
 
 }
 
-function updateScore() { /* Render score to screen */
+function updateScore() { // Render score to screen 
   let pts = score();
-  let leader = lead<0 ? "White": lead==0 ? "" : "Black";
+  leader = lead<0 ? "White": lead==0 ? "" : "Black";
   let element = document.getElementById("score");
-  element.innerHTML = "Lead: " + Math.abs(lead) + " " + leader + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture; //need to replace with "Lead" = diff
-   if (lead >= leadThreshold - compensation && lastCapture >=2 || lead <= -leadThreshold - compensation && lastCapture >=2){ //we need to make this ifs with requirement of 2 stones captured
+  element.innerHTML = (side==1 ? "Black":"White")  + " to Play<br>" + leader +" "+ (leadThreshold-Math.abs(lead)) + " more to Win (w/ 2+ Capture)<br>" + "Lead Threshold: " + leadThreshold + " | White Compensation: " + compensation + " | Last Capture: " + lastCapture + "<br>"
+   if (lead >= leadThreshold && lastCapture >=2 || lead <= -leadThreshold && lastCapture >=2){ 
 	 alert(leader + " Wins!"); 
 	canvas.removeEventListener("click", userInput);
 	side = EMPTY;
@@ -219,20 +246,19 @@ function setStone(sq, color, user) { /* Place stone on board */
   } else if (sq == ko) {
     if (user) alert("Ko!");
     return false;
-  } let old_ko = ko;
+  } let old_ko = ko;   //we need to redo ko
   ko = EMPTY;
+  
   board[sq] = color;
   captures(3 - color, sq);
   count(sq, color);
+  captures(color, sq); //these two try to remove suicides
+  count(sq, !color);
   let suicide = true ? false : true; //we need to redo suicide
   restoreBoard();
-  if (suicide) {
-    board[sq] = EMPTY;
-    ko = old_ko;
-    if (user) alert("Suicide move!");
-    return false;
-  } side = 3 - side;
+  side = 3 - side;
   userMove = sq;
+  // if (boardPositions.includes(JSON.stringify(board))) alert ("Illegal - superko!"); //works in theory but alerts every move boardPositions.push(JSON.stringify(board));
   return true; /*----- We don't need no stinking suicide rule (though we might have to check for superko?) */ 
 }
 
@@ -260,7 +286,7 @@ function evaluate() { /* Count captures stones difference */
   
 }
 
-function search(depth) { /* Recursively search fighting moves */
+function search(depth) { /* Recursively search fighting moves  - we still need this, it interacts with stuff*/
   if (!depth) return evaluate();
   let bestScore = -10000;
   for (let sq of getUrgentMoves()) {
@@ -311,7 +337,7 @@ function tenuki(direction) { /* Play away when no urgent moves */
   }
 }
 
-function play(depth) { /* Engine plays a move */
+function play(depth) { // Engine plays a move  ----- disabling this function renders game two-player
   let eval = 0;
   bestMove = 0;
   eval = search(depth);
@@ -321,7 +347,7 @@ function play(depth) { /* Engine plays a move */
   };let oldSide = side;
   if (!setStone(bestMove, side, false)) {
     side = 3 - side;
-    updateScore();
+    //updateScore();
     let empty = score()[EMPTY];
     if (empty == -1) { //rendered useless to override original game ending mechanic
       let finalScore = score();
@@ -330,20 +356,49 @@ function play(depth) { /* Engine plays a move */
     } setStone(bestMove, side, false); 
     return;
   };drawBoard();
+  drawPrisoners;
   updateScore();
   let scorePosition = score();
+} 
+
+//STONES SPECIFIC RULES
+function returnPrisoner() {
+	if ( (side == 1 && (lead-compensation)<0) || (side == 2 && (lead-compensation)>0 || (lead - compensation) == 0 )) { //this just doesn't work - may have been 'let' on leader?
+	alert("Must have more Prisoner to use Prisoner Return \nPlay another move")} else {
+		alert("Prisoner Returned");
+		noMove++;
+		side = 3 - side;	
 }
+}
+
 
 // MAIN
 canvas.addEventListener('click', userInput);
 selectSize.addEventListener("change", function() {
   size = parseInt(selectSize.value);
+  size == 21 ? leadThreshold = 15 : size == 15 ? leadThreshold = 11 : leadThreshold = 7 ; 
   cell = canvas.width / size;
   initBoard();
   drawBoard();
+  drawPrisoners();
   side = BLACK;
   ko = EMPTY;
 });
-
+comp.addEventListener("change", function() {
+  compensation = parseInt(comp.value);
+  cell = canvas.width / size;
+  initBoard();
+  drawBoard();
+  drawPrisoners();
+  side = BLACK;
+  ko = EMPTY;
+});
 initBoard();
 drawBoard();
+drawPrisoners();
+/*
+
+
+
+
+*/

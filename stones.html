@@ -3,40 +3,82 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>STONES DEMO</title>
+  <title>Stones Demo</title>
 </head>
 <body>
   <style>
     body {
+	  background-color: #70836e;
       margin: 0;
       height: 100vh;
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: top;
       flex-direction: column;
     }
   </style>
-  <select id="size" style="margin-left: 30px; margin-bottom: 10px; z-index: 1">
-    <option value="11" selected>9x9</option>
+<div> 
+ <select id="size" style=" margin-top: 50px; margin-bottom: 10px; z-index: 1">
+     <option value="9">7x7</option>
+	<option value="11" selected>9x9</option>
     <option value="15">13x13</option>
-    <option value="21">19x19</option>
   </select>
+  <select id="comp" style=" margin-top: 0px; margin-bottom: 10px; z-index: 1">
+     <option value="0">Compensation OFF</option>
+	<option value="6" selected>Compensation ON</option>
+  </select>
+  </div>
+  <div>
   <canvas
-    id="gobang"
-    width="500"
-    height="500"
+    id="left"
+    width="200"
+    height="450"
     style="
-      padding: 0;
+	  border: 1px none;
+      padding: 1;
       margin: auto;
-      display: block;
-      position: absolute;
       top: 0;
       bottom: 0;
       left: 0;
       right: 0;">
   </canvas>
-  <div id="score" style="text-align: center; margin-top: 450px;">Black to play</div>
-  <script src="stones.js"></script>
-  <a href="https://iowago.club/stones" target="blank">Learn How to Play Stones</a>
+  <canvas
+    id="gobang"
+    width="450"
+    height="450"
+    style="
+	background-image: url('https://i.imgur.com/VJhgbnA.png'); 
+            background-repeat: no-repeat; 
+            background-size: cover; 
+            background-position: center; 
+      padding: 0;
+      margin: auto;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;">
+  </canvas>
+    <canvas
+    id="pzone"
+    width="200"
+    height="450"
+    style="
+	  border: 1px solid white;
+      padding: 1;
+      margin: auto;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;">
+  </canvas>
+  </div>
+  <div id="score" style=  "font-family: verdana; color: white; text-align: center; margin-top: 10px; margin-bottom: 10px;">Black to play</div>
+ <button onclick="returnPrisoner()">Prisoner Return</button> 
+ <script src="stones.js" style=  "font-family: verdana; color: white;"></script>
+ <div>
+	<a href="https://iowago.club/stones" target="blank"><button>Learn How to Play Stones</button> </a>
+	<a href="https://forms.gle/1q9eMPyE5LxCtYhP6" target="blank"><button>Take our quick survey!</button> </a>
+  <p style="margin-bottom: 10px;"></p>
+  </div>
 </body>
 </html>
