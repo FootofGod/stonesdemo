@@ -17,7 +17,6 @@
       flex-direction: column;
     }
   </style>
-<div> 
  <select id="size" style=" margin-top: 50px; margin-bottom: 10px; z-index: 1">
      <option value="9">7x7</option>
 	<option value="11" selected>9x9</option>
@@ -27,9 +26,8 @@
      <option value="0">Compensation OFF</option>
 	<option value="6" selected>Compensation ON</option>
   </select>
-  </div>
-  <div>
-  <canvas
+  <div class = "container" style="display:flex; flex-direction: row;">
+ <canvas
     id="left"
     width="200"
     height="450"
@@ -63,7 +61,7 @@
     width="200"
     height="450"
     style="
-	  border: 1px solid white;
+	  border: 0px solid white;
       padding: 1;
       margin: auto;
       top: 0;
