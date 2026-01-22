@@ -88,21 +88,28 @@ function drawBoard() { /* Render board to screen */
 
 function drawPrisoners() { // Render prisoners to screen
   ctx2.clearRect(0, 0, canvas2.width, canvas2.height);  //we need to make it put two columns of 6, one being compensation, one being lead
-  for (let i = 0; i < compensation; i++) {
-        ctx2.beginPath();
-        ctx2.arc(40, 100+i*40, cell / 2 - 2, 0, 2 * Math.PI);
+  for (let i = 0; i < compensation; i++) { //draws compensation
+        ctx2.beginPath(); 
+        ctx2.arc(30, 50+i*30, 12, 0, 2 * Math.PI);
         ctx2.fillStyle = "black";
         ctx2.fill();
         ctx2.stroke();
       }
-	for (let i = 0; i < Math.abs(lead); i++) {
+	for (let i = 0; i < (Math.abs(lead) > compensation ? compensation : Math.abs(lead)); i++) { //draws first lead column
         ctx2.beginPath();
-        ctx2.arc(100, 100+i*40, cell / 2 - 2, 0, 2 * Math.PI);
+        ctx2.arc(60, 50+i*30, 12, 0, 2 * Math.PI);
         ctx2.fillStyle = (lead < 0 ? "black" : "white");
         ctx2.fill();
         ctx2.stroke();
       }
-}
+	for (let i = 0; i < Math.abs(lead) - compensation; i++) { //draws second lead column
+        ctx2.beginPath();
+        ctx2.arc(90, 50+i*30, 12, 0, 2 * Math.PI);
+        ctx2.fillStyle = (lead < 0 ? "black" : "white");
+        ctx2.fill();
+        ctx2.stroke();
+      }
+}	  
 
 
 function userInput(event) { /* Handle user input */
@@ -116,7 +123,7 @@ function userInput(event) { /* Handle user input */
   if (!setStone(sq, side, true)) return;
   drawBoard(); 
   
-  setTimeout(function() { play(6); }, 10);
+  // setTimeout(function() { play(6); }, 10);
   updateScore();
   drawPrisoners();
 
@@ -244,7 +251,7 @@ function setStone(sq, color, user) { /* Place stone on board */
     if (user) alert("Illegal move!");
     return false;
   } else if (sq == ko) {
-    if (user) alert("Ko!");
+    if (user) alert("Illegal Move!\nRepeats a previous Board Position");
     return false;
   } let old_ko = ko;   //we need to redo ko
   ko = EMPTY;
@@ -347,7 +354,7 @@ function play(depth) { // Engine plays a move  ----- disabling this function ren
   };let oldSide = side;
   if (!setStone(bestMove, side, false)) {
     side = 3 - side;
-    //updateScore();
+    updateScore();
     let empty = score()[EMPTY];
     if (empty == -1) { //rendered useless to override original game ending mechanic
       let finalScore = score();
@@ -356,7 +363,6 @@ function play(depth) { // Engine plays a move  ----- disabling this function ren
     } setStone(bestMove, side, false); 
     return;
   };drawBoard();
-  drawPrisoners;
   updateScore();
   let scorePosition = score();
 } 
