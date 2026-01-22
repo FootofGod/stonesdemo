@@ -17,7 +17,8 @@
       flex-direction: column;
     }
   </style>
- <select id="size" style=" margin-top: 50px; margin-bottom: 10px; z-index: 1">
+  <div>
+ <select id="size" style=" margin-top: 20px; margin-bottom: 10px; z-index: 1">
      <option value="9">7x7</option>
 	<option value="11" selected>9x9</option>
     <option value="15">13x13</option>
@@ -26,11 +27,12 @@
      <option value="0">Compensation OFF</option>
 	<option value="6" selected>Compensation ON</option>
   </select>
+  </div>
   <div class = "container" style="display:flex; flex-direction: row;">
  <canvas
     id="left"
-    width="200"
-    height="450"
+    width="50"
+    height="350"
     style="
 	  border: 1px none;
       padding: 1;
@@ -42,13 +44,14 @@
   </canvas>
   <canvas
     id="gobang"
-    width="450"
-    height="450"
+    width="350"
+    height="350"
     style="
 	background-image: url('https://i.imgur.com/VJhgbnA.png'); 
             background-repeat: no-repeat; 
             background-size: cover; 
             background-position: center; 
+	  display:block;
       padding: 0;
       margin: auto;
       top: 0;
@@ -58,11 +61,11 @@
   </canvas>
     <canvas
     id="pzone"
-    width="200"
-    height="450"
+    width="150"
+    height="350"
     style="
 	  border: 0px solid white;
-      padding: 1;
+      padding: 0;
       margin: auto;
       top: 0;
       bottom: 0;
